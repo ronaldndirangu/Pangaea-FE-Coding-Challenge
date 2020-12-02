@@ -42,6 +42,10 @@ const CustomDrawer = () => {
     return acc;
   }, 0);
 
+  const handleChangeCurrency = (currency) => {
+    dispatch({ type: 'CHANGE_CURRENCY', currency })
+  }
+
   return (
     <Drawer onClose={onClose} isOpen={isOpen} size="sm" scrollBehavior="inside">
       <DrawerOverlay>
@@ -57,9 +61,7 @@ const CustomDrawer = () => {
                     <MenuItem
                       key={index}
                       fontSize="md"
-                      onClick={() =>
-                        dispatch({ type: 'CHANGE_CURRENCY', currency })
-                      }
+                      onClick={() => handleChangeCurrency(currency)}
                     >
                       {currency}
                     </MenuItem>
@@ -87,7 +89,7 @@ const CustomDrawer = () => {
           </DrawerBody>
           <DrawerFooter d="flex" justifyContent="space-between">
             <Text>Subtotal</Text>
-            <Text>{subTotal}</Text>
+            <Text>${subTotal}</Text>
           </DrawerFooter>
         </DrawerContent>
       </DrawerOverlay>

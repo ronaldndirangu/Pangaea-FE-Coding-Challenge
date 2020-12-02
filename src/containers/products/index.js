@@ -10,12 +10,18 @@ import { CartContext } from '../../contexts/cart.context';
 
 const Products = () => {
   const toast = useToast();
-  const { state } = React.useContext(CartContext);
+  const { state, dispatch } = React.useContext(CartContext);
 
   const { loading, error, data } = useQuery(GET_PRODUCTS, {
     variables: { currency: state.currency },
     notifyOnNetworkStatusChange: true,
   });
+
+  React.useEffect(() => {
+    dispatch({ type: 'UPDATE_PRODUCT_ITEMS', productItems: data && data.products })
+    if (!loading) dispatch({ type: 'UPDATE_CART_PRICES' })
+  }, [data, dispatch, loading])
+
 
   if (error)
     return toast({
@@ -25,7 +31,6 @@ const Products = () => {
       isClosable: true,
     });
 
-  console.log({ data });
   return (
     <PageWrapper>
       {loading ? (

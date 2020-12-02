@@ -3,75 +3,103 @@ import React from 'react';
 const initialState = {
   isDrawerOpen: false,
   cartItems: {},
-  currency: 'USD'
+  currency: 'USD',
+  productItems: [],
 };
-
 
 const cartReducer = (state, action) => {
   const getItemCartData = (item) => {
     if (!state.cartItems[item.id]) {
       return {
         quantity: 1,
-        data: item
-      }
+        data: item,
+      };
     } else {
       return {
         ...state.cartItems[item.id],
-        quantity: state.cartItems[item.id]['quantity'] + 1
-      }
+        quantity: state.cartItems[item.id]['quantity'] + 1,
+      };
     }
-  }
+  };
 
   const getReducedItems = (item) => {
     if (state.cartItems[item.id]['quantity'] === 1) {
-      const cartItems = state.cartItems
-      delete cartItems[item.id]
-      return cartItems
+      const cartItems = state.cartItems;
+      delete cartItems[item.id];
+      return cartItems;
     } else {
       return {
         ...state.cartItems,
         [item.id]: {
           ...state.cartItems[item.id],
-          quantity: state.cartItems[item.id]['quantity'] - 1
-        }
-      }
+          quantity: state.cartItems[item.id]['quantity'] - 1,
+        },
+      };
     }
-  }
+  };
+
+  const getUpdatedCartItems = () => {
+    const cartItems = {};
+    Object.entries(state.cartItems).forEach(([key, value]) => {
+      cartItems[key] = {
+        ...value,
+        data: {
+          ...value.data,
+          price:
+            state.productItems &&
+            state.productItems.length &&
+            state.productItems.find((item) => +item.id === +key).price,
+        },
+      };
+    });
+
+    return cartItems;
+  };
 
   switch (action.type) {
     case 'TOGGLE_DRAWER':
       return {
         ...state,
-        isDrawerOpen: !state.isDrawerOpen
+        isDrawerOpen: !state.isDrawerOpen,
       };
     case 'CLOSE_DRAWER':
       return {
         ...state,
-        isDrawerOpen: false
+        isDrawerOpen: false,
       };
     case 'OPEN_DRAWER':
       return {
         ...state,
-        isDrawerOpen: true
+        isDrawerOpen: true,
       };
     case 'ADD_CART_ITEM':
       return {
         ...state,
         cartItems: {
           ...state.cartItems,
-          [action.item.id]: getItemCartData(action.item)
-        }
-      }
+          [action.item.id]: getItemCartData(action.item),
+        },
+      };
     case 'REDUCE_CART_ITEM':
       return {
         ...state,
-        cartItems: getReducedItems(action.item)
-      }
+        cartItems: getReducedItems(action.item),
+      };
     case 'CHANGE_CURRENCY':
       return {
         ...state,
-        currency: action.currency
-      }
+        currency: action.currency,
+      };
+    case 'UPDATE_PRODUCT_ITEMS':
+      return {
+        ...state,
+        productItems: action.productItems,
+      };
+    case 'UPDATE_CART_PRICES':
+      return {
+        ...state,
+        cartItems: getUpdatedCartItems(),
+      };
     default:
       return state;
   }

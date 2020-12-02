@@ -7,15 +7,6 @@ export const GET_PRODUCTS = gql`
       title
       image_url
       price (currency: $currency)
-      product_options {
-        title
-        prefix
-        suffix
-        options {
-          id
-          value
-        }
-      }
     }
   }
 `;
