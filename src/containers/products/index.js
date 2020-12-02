@@ -4,10 +4,18 @@ import { GET_PRODUCTS } from '../../graphql/queries';
 import { useToast } from '@chakra-ui/react';
 import PageWrapper from '../../components/PageWrapper';
 import Loader from '../../components/Loader';
+import ProductItem from './ProductItem';
+import ProductsWrapper from '../../components/ProductsWrapper';
+import { CartContext } from '../../contexts/cart.context';
 
 const Products = () => {
   const toast = useToast();
-  const { loading, error, data } = useQuery(GET_PRODUCTS);
+  const { state } = React.useContext(CartContext);
+
+  const { loading, error, data } = useQuery(GET_PRODUCTS, {
+    variables: { currency: state.currency },
+    notifyOnNetworkStatusChange: true,
+  });
 
   if (error)
     return toast({
@@ -23,7 +31,12 @@ const Products = () => {
       {loading ? (
         <Loader />
       ) : (
-        Products
+        <ProductsWrapper>
+          {data &&
+            data.products.map((product) => (
+              <ProductItem key={product.id} product={product} />
+            ))}
+        </ProductsWrapper>
       )}
     </PageWrapper>
   );
